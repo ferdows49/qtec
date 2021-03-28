@@ -1,0 +1,3 @@
+[submodule "qtec"]
+	path = qtec
+	url = https://github.com/ferdows49/qtec.git
