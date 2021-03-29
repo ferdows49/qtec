@@ -1,5 +1,4 @@
-from datetime import datetime, timedelta
-
+from datetime import datetime, timedelta, date
 from django.shortcuts import render
 from .models import S_history
 
@@ -13,6 +12,7 @@ def home(request):
 
     keyword = request.GET.get('keyword')
     user = request.GET.get('user')
+    for_today = request.GET.get('for_today')
     from_yesterday = request.GET.get('from_yesterday')
     from_last_week = request.GET.get('from_last_week')
     from_last_month = request.GET.get('from_last_month')
@@ -24,6 +24,10 @@ def home(request):
 
     if is_valid_queryparam(user):
         qs = qs.filter(user__iexact=user)
+
+    if is_valid_queryparam(for_today):
+        today = date.today()
+        qs = qs.filter(time__year=today.year, time__month=today.month, time__day=today.day)
 
     if is_valid_queryparam(from_yesterday):
         yesterday = datetime.today() - timedelta(days=1)
@@ -41,7 +45,7 @@ def home(request):
         qs = qs.filter(time__gte=date_min)
 
     if is_valid_queryparam(date_max):
-        qs = qs.filter(time__lt=date_max)
+        qs = qs.filter(time__lte=date_max)
         
-    return render(request, 'base_generic.html', {'histories': qs})
+    return render(request, 'base_generic.html', {'qs': qs})
 
